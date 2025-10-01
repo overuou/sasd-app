@@ -1,8 +1,13 @@
 import { Section, Cell, Avatar } from '@telegram-apps/telegram-ui';
 import { FC } from 'react';
 import { initDataState as _initDataState, useSignal, type User } from '@telegram-apps/sdk-react';
+import { Link } from '@/components/Link/Link.tsx';
 
-export const UserProfile: FC = () => {
+interface UserProfileProps {
+  clickable?: boolean;
+}
+
+export const UserProfile: FC<UserProfileProps> = ({ clickable }) => {
   const initData = useSignal(_initDataState);
   const user: User | undefined = initData?.user;
 
@@ -17,20 +22,29 @@ export const UserProfile: FC = () => {
     .join('')
     .toUpperCase();
 
+  const content = (
+    <Cell
+      before={
+        user.photo_url ? (
+          <Avatar size={40} src={user.photo_url} />
+        ) : (
+          <Avatar size={40}>{initials}</Avatar>
+        )
+      }
+      subtitle={user.username ? `@${user.username}` : undefined}
+      after={clickable ? '>' : undefined}
+    >
+      {fullName}
+    </Cell>
+  );
+
   return (
     <Section header="Profile">
-      <Cell
-        before={
-          user.photo_url ? (
-            <Avatar size={40} src={user.photo_url} />
-          ) : (
-            <Avatar size={40}>{initials}</Avatar>
-          )
-        }
-        subtitle={user.username ? `@${user.username}` : undefined}
-      >
-        {fullName}
-      </Cell>
+      {clickable ? (
+        <Link to="/profile">{content}</Link>
+      ) : (
+        content
+      )}
     </Section>
   );
 };
